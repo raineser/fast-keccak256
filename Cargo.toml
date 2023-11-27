@@ -1,0 +1,26 @@
+[package]
+name = "fast_keccak256"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[[example]]
+name = "ex"
+
+[dependencies]
+crunchy = "0.2.2"
+hex = "0.4.3"
+unroll = "0.1.5"
+
+[[bench]]
+name = "keccak"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+
+[workspace]
+members = ["comparison"]
