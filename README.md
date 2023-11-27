@@ -4,7 +4,7 @@ This is a implementation of the ['Keccak256'](https://nvlpubs.nist.gov/nistpubs/
 
 ## Benchmarks
 
-This impleneation is currently slighly faster than ['tiny-keccak'](https://github.com/debris/tiny-keccak.git) with a 32 byte input.
+This implementation is currently slightly faster than 'tiny-keccak' with a 32 byte input.
 
 ```
 running 4 tests
