@@ -82,13 +82,12 @@ fn to1d(s: &mut [u8; 200], a: &mut [u64; 25]) {
 
     for x in 0..5 {
         for y in 0..5{
-
             unroll! {
-            for byte in 0..8 {
-                // Endianness is flipped to big
-                s[8*(x+5*y)+byte] = to_big_endian(a[(5*x)+y], byte);
+                for byte in 0..8 {
+                    // Endianness is flipped to big
+                    s[8*(x+5*y)+byte] = to_big_endian(a[(5*x)+y], byte);
+                }
             }
-        }
         }
     }
 }
@@ -101,24 +100,32 @@ fn hash_round(s: &mut [u8; 200]) {
 
     let mut c = [0,0,0,0,0];
 
-    let mut d: [u64; 5] = [0,0,0,0,0];
+    let mut d: [u64; 5] = [0;5];
+
+    let mut t: [u64; 5] = [0;5];
 
     to3d(s, &mut a);
 
     for round in 0..24 {
         
         //theta
-        for x in 0..5 {
+        
+       for x in 0..5 {
             c[x] = a[5*x] ^ a[(5*x)+1] ^ a[(5*x)+2]^ a[(5*x)+3]^ a[(5*x)+4];
-        }
+       }
         
-        for x in 0..5 {
-            d[x] = c[(x+4)% 5] ^ c[(x+1) % 5].rotate_left(1);
+        unroll! {
+            for x in 0..5 {
+                d[x] = c[(x+4)% 5] ^ c[(x+1) % 5].rotate_left(1);
+            }
         }
-        
+
+      
         for x in 0..5 {
-            for y in 0..5 {
-                a[(5*x)+y] ^= d[x];
+            unroll! {
+                for y in 0..5 {
+                    a[(5*x)+y] ^= d[x];
+                }
             }
         }
 
@@ -133,18 +140,14 @@ fn hash_round(s: &mut [u8; 200]) {
 
         //chi
         for y in 0..5 {
-        
-            let mut t: [u64; 5] = [0;5];
 
             for x in 0..5 {
-                t[x] = a[(5*x)+y];
+                d[x] = a[(5*x)+y];
             }
             unroll! {
-
-            for x in 0..5 {
-                a[(5*x)+y] = t[x] ^ (( !t[(x+1)%5]) & t[(x+2)%5]);
-            }
-
+                for x in 0..5 {
+                    a[(5*x)+y] = d[x] ^ (( !d[(x+1)%5]) & d[(x+2)%5]);
+                }
             }
         }
         
@@ -162,13 +165,11 @@ pub fn keccak256(bytes: &[u8]) -> [u8; 32] {
 
     let mut offset: usize = 0;
 
-
     if bytes.len() % 136 == 0 {
         for i in 0..(bytes.len()/136) as i64 -1{
             
             for j in 0..136 {
-                s[j] = s[j] ^ bytes[(i as usize *136)+j]
-                
+                s[j] = s[j] ^ bytes[(i as usize *136)+j]     
             }
             hash_round(&mut s);
 
@@ -186,11 +187,9 @@ pub fn keccak256(bytes: &[u8]) -> [u8; 32] {
         }
     }
 
-
     for i in offset..bytes.len() {
         s[i-offset] = s[i-offset] ^ bytes[i];
     }
-
 
     // pad last block to 136 bytes
     pad(&mut s, bytes.len() - offset);

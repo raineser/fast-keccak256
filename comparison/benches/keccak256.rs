@@ -39,7 +39,7 @@ fn fast_keccak_keccak_256_input_32_bytes(b: &mut Bencher) {
     b.bytes = data.len() as u64;
 
     b.iter(|| {
-        let mut res: [u8; 32] = keccak256(&data);
+        let res: [u8; 32] = keccak256(&data);
     });
 }
 
@@ -50,6 +50,6 @@ fn fast_keccak_keccak_256_input_4096_bytes(b: &mut Bencher) {
     b.bytes = data.len() as u64;
 
     b.iter(|| {
-        let mut res: [u8; 32] = keccak256(&data);
+        let res: [u8; 32] = keccak256(&data);
     });
 }

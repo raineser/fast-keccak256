@@ -14,9 +14,6 @@ crunchy = "0.2.2"
 hex = "0.4.3"
 unroll = "0.1.5"
 
-[[bench]]
-name = "keccak"
-
 [profile.release]
 codegen-units = 1
 lto = "fat"
